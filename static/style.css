@@ -1,0 +1,241 @@
+:root {
+            --primary: #6366f1;
+            --primary-soft: #e0e7ff;
+            --secondary: #10b981;
+            --bg: #fdfdfd;
+            --sidebar: #ffffff;
+            --card: #ffffff;
+            --text-main: #1e293b;
+            --text-sub: #64748b;
+            --border: #f1f5f9;
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --radius: 12px;
+        }
+
+        [data-theme='dark'] {
+            --bg: #0f172a;
+            --sidebar: #1e293b;
+            --card: #1e293b;
+            --text-main: #f8fafc;
+            --text-sub: #94a3b8;
+            --border: #334155;
+            --primary-soft: #312e81;
+        }
+
+        * { box-sizing: border-box; transition: background 0.3s, border 0.3s; }
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            margin: 0;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: 280px;
+            background: var(--sidebar);
+            border-right: 1px solid var(--border);
+            padding: 2rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 2.5rem;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0.75rem 1rem;
+            text-decoration: none;
+            color: var(--text-sub);
+            border-radius: var(--radius);
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        .nav-item:hover, .nav-item.active {
+            background: var(--primary-soft);
+            color: var(--primary);
+        }
+
+        /* MAIN CONTENT */
+        .main-content {
+            margin-left: 280px;
+            flex: 1;
+            padding: 2rem 3rem;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 3rem;
+        }
+
+        .search-bar {
+            background: var(--card);
+            border: 1px solid var(--border);
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
+            width: 400px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: var(--shadow);
+        }
+        .search-bar input {
+            border: none;
+            background: transparent;
+            outline: none;
+            width: 100%;
+            color: var(--text-main);
+        }
+
+        /* FORMULA CARDS */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            border-color: var(--primary);
+        }
+
+        .card-tag {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            font-weight: 700;
+            color: var(--primary);
+            letter-spacing: 0.05em;
+        }
+
+        .card-eqn {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 1.25rem;
+            font-weight: 700;
+            background: var(--bg);
+            padding: 0.75rem;
+            border-radius: 8px;
+            text-align: center;
+            color: var(--secondary);
+        }
+
+        .card-desc {
+            font-size: 0.9rem;
+            color: var(--text-sub);
+            line-height: 1.5;
+        }
+
+        .solve-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.8rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        /* MODAL */
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-content {
+            background: var(--card);
+            width: 90%;
+            max-width: 600px;
+            border-radius: 20px;
+            padding: 2.5rem;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .input-grid {
+            display: grid;
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .input-row {
+            display: flex;
+            gap: 10px;
+        }
+        input, select {
+            padding: 0.8rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--bg);
+            color: var(--text-main);
+            flex: 1;
+        }
+
+        .solution-area {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: var(--primary-soft);
+            border-radius: 12px;
+            display: none;
+        }
+
+        .step {
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+            padding-left: 1rem;
+            border-left: 2px solid var(--primary);
+        }
+
+        .theme-toggle {
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 50%;
+            border: 1px solid var(--border);
+            background: var(--card);
+            color: var(--text-main);
+        }
+
+        @media (max-width: 768px) {
+            .sidebar { width: 0; padding: 0; overflow: hidden; }
+            .main-content { margin-left: 0; padding: 1.5rem; }
+            .search-bar { width: 100%; }
+        }

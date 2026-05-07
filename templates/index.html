@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SolveMate Pro | Physics Intelligence</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="logo">
+            <i data-lucide="zap"></i>
+            <span>SolveMate</span>
+        </div>
+        <nav>
+            <div class="nav-item active" onclick="filterCategory('all')">
+                <i data-lucide="layout-grid"></i> All Formulas
+            </div>
+            {% for category in library.keys() %}
+            <div class="nav-item" onclick="filterCategory('{{category}}')">
+                <i data-lucide="folder"></i> {{category}}
+            </div>
+            {% endfor %}
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        <header class="header">
+            <div class="search-bar">
+                <i data-lucide="search" size="18"></i>
+                <input type="text" id="formulaSearch" placeholder="Search kinematics, ohms law, etc..." onkeyup="handleSearch()">
+            </div>
+            <button class="theme-toggle" onclick="toggleTheme()">
+                <i data-lucide="moon" id="theme-icon"></i>
+            </button>
+        </header>
+
+        <div id="category-container">
+            {% for category, formulas in library.items() %}
+            <section class="category-sec" data-category="{{category}}">
+                <h2 style="margin-bottom: 1.5rem; font-weight: 800;">{{category}}</h2>
+                <div class="grid">
+                    {% for f in formulas %}
+                    <div class="card" data-title="{{f.title}} {{f.equation}}">
+                        <span class="card-tag">{{category}}</span>
+                        <h3 style="margin: 0;">{{f.title}}</h3>
+                        <div class="card-eqn">{{f.equation}}</div>
+                        <p class="card-desc">{{f.desc}}</p>
+                        <div style="font-size: 0.8rem; color: var(--text-sub);">
+                            <strong>Tip:</strong> {{f.when_to_use}}
+                        </div>
+                        <button class="solve-btn" onclick="openSolver('{{f.id}}')">
+                            Calculate Now <i data-lucide="arrow-right" size="16"></i>
+                        </button>
+                    </div>
+                    {% endfor %}
+                </div>
+            </section>
+            {% endfor %}
+        </div>
+    </main>
+
+    <div class="modal" id="solverModal">
+        <div class="modal-content">
+            <div style="display: flex; justify-content: space-between; align-items: start;">
+                <div>
+                    <h2 id="m-title" style="margin: 0 0 5px 0;">Formula Solver</h2>
+                    <p style="font-size: 0.85rem; color: var(--text-sub);">Leave the field you want to solve for blank.</p>
+                </div>
+                <button onclick="closeModal()" style="background:none; border:none; cursor:pointer; color:var(--text-sub);">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+
+            <div class="input-grid" id="m-inputs" oninput="validateForm()"></div>
+
+            <button class="solve-btn" id="m-calc-btn" style="width: 100%; height: 50px;" disabled onclick="performCalculation()">
+                Solve Formula
+            </button>
+
+            <div class="solution-area" id="solution-area">
+                <h4 style="margin-top: 0;">Step-by-Step Solution</h4>
+                <div id="steps-container"></div>
+                <div id="final-res" style="margin-top: 15px; font-weight: 800; font-size: 1.2rem; color: var(--primary);"></div>
+
+                <!-- NEW: Explain Button -->
+                <button class="solve-btn" id="explain-btn" style="width: 100%; margin-top: 15px; background: var(--secondary); display: none;" onclick="showExplanation()">
+                    📚 Explain in Detail
+                </button>
+
+                <!-- NEW: Full Explanation Panel (Collapsible) -->
+                <div id="explanation-panel" style="display: none; margin-top: 20px; padding: 1.5rem; background: rgba(99,102,241,0.1); border-radius: 12px; border-left: 4px solid var(--primary);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <h4 style="margin: 0;">🎓 Full Tutor Explanation</h4>
+                        <button onclick="toggleExplanation()" style="background: none; border: none; cursor: pointer; color: var(--text-sub); font-size: 1.2rem;">−</button>
+                    </div>
+                    <div id="explanation-content" style="line-height: 1.6;"></div>
+                </div>
+            </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
