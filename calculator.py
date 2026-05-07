@@ -298,19 +298,22 @@ def calculate():
 
 
 # 🔥 NEW: Explain endpoint (ADDED CORRECTLY AFTER calculate())
-
 @calc_bp.route('/explain', methods=['POST'])
 def explain_calculation():
-    data = request.get_json()
+    """DETAILED tutor-level explanation endpoint."""
+    data = request.json
     fid, vals, units = data['fid'], data['vals'], data['units']
-    
+
+    # Validate exactly one missing value
     missing = [k for k, v in vals.items() if v == ""]
     if len(missing) != 1:
-        return jsonify({'error': 'One field blank'}), 400
-    
+        return jsonify({'error': 'Leave exactly one field blank.'}), 400
+
     target = missing[0]
+
+    # Normalize known values to SI units
     v = {k: normalize(val, units[k]) for k, val in vals.items() if val != ""}
-    
+
     try:
         res = 0
 
@@ -549,25 +552,24 @@ def explain_calculation():
 
         else:
             return jsonify({'error': f'Formula {fid} not implemented yet'}), 400
-        res = 0
-        exec(f"res = {fid}_calculation(v, target}")  # Skip for now - use simple
-        
-        # SIMPLE FALLBACK for ALL formulas
-        final_res = abs(res) or 42.0  # Dummy result
-        v_display = {k: abs(val) or 10.0 for k, val in v.items()}
-        
-        from utils import generate_tutor_explanation
-        explanation = generate_tutor_explanation(fid, target, v, v_display, units, res, final_res)
-        
+
+        # Convert result back to display units
+        final_res = denormalize(res, units[target])
+        v_display = {k: denormalize(val, units[k]) for k, val in v.items()}
+
+        # Generate steps
+        steps = generate_detailed_steps(fid, target, v, v_display, units, res, final_res)
+
         return jsonify({
+            'res_formatted': None,  # Frontend handles formatting
             'res': final_res,
             'unit': units[target],
-            'explanation': explanation
+            'steps': steps
         })
-    except:
-        # FAILSAFE response
-        return jsonify({
-            'res': 42,
-            'unit': 'units',
-            'explanation': ['🧠 Formula works!', '✅ Backend fixed!']
-        })
+
+    except ZeroDivisionError:
+        return jsonify({'error': 'Division by zero - check inputs.'}), 400
+    except ValueError as e:
+        return jsonify({'error': str(e)}), 400
+    except Exception as e:
+        return jsonify({'error': f'Calculation error: {str(e)}'}), 500
