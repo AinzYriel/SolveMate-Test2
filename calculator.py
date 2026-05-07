@@ -304,17 +304,15 @@ def explain_calculation():
     data = request.json
     fid, vals, units = data['fid'], data['vals'], data['units']
 
-    # Validate exactly one missing value
     missing = [k for k, v in vals.items() if v == ""]
     if len(missing) != 1:
         return jsonify({'error': 'Leave exactly one field blank.'}), 400
 
     target = missing[0]
-
-    # Normalize known values to SI units
     v = {k: normalize(val, units[k]) for k, val in vals.items() if val != ""}
 
     try:
+        # === ALL YOUR EXISTING CALCULATION LOGIC HERE (same as calculate()) ===
         res = 0
 
         # === COMPLETE 70+ FORMULA ENGINE ===
@@ -553,23 +551,19 @@ def explain_calculation():
         else:
             return jsonify({'error': f'Formula {fid} not implemented yet'}), 400
 
-        # Convert result back to display units
+        
         final_res = denormalize(res, units[target])
         v_display = {k: denormalize(val, units[k]) for k, val in v.items()}
 
-        # Generate steps
-        steps = generate_detailed_steps(fid, target, v, v_display, units, res, final_res)
+        # 🆕 FIXED: Import + call explanation generator
+        from utils import generate_tutor_explanation
+        explanation = generate_tutor_explanation(fid, target, v, v_display, units, res, final_res)
 
         return jsonify({
-            'res_formatted': None,  # Frontend handles formatting
             'res': final_res,
             'unit': units[target],
-            'steps': steps
+            'explanation': explanation  # 🆕 This array was missing!
         })
 
-    except ZeroDivisionError:
-        return jsonify({'error': 'Division by zero - check inputs.'}), 400
-    except ValueError as e:
-        return jsonify({'error': str(e)}), 400
     except Exception as e:
-        return jsonify({'error': f'Calculation error: {str(e)}'}), 500
+        return jsonify({'error': f'Explain error: {str(e)}'}), 500
