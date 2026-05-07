@@ -2,7 +2,7 @@
 
 from flask import Blueprint, request, jsonify
 import math
-from utils import normalize, denormalize, generate_detailed_steps
+from utils import normalize, denormalize, generate_detailed_steps, generate_tutor_explanation  # ADD generate_tutor_explanation
 from formulas import get_formula_by_id
 
 # Create Blueprint
@@ -317,7 +317,7 @@ def explain_calculation():
     try:
         res = 0
 
-        # === COMPLETE 70+ FORMULA ENGINE ===
+        # [KEEP ALL YOUR EXISTING FORMULA CALCULATIONS - no change needed]
         if fid == 'v_final':
             if target == 'v':
                 res = v['u'] + (v['a'] * v['t'])
@@ -557,14 +557,17 @@ def explain_calculation():
         final_res = denormalize(res, units[target])
         v_display = {k: denormalize(val, units[k]) for k, val in v.items()}
 
-        # Generate steps
+        # Generate REGULAR steps (same as calculate)
         steps = generate_detailed_steps(fid, target, v, v_display, units, res, final_res)
+        
+        # NEW: Generate TUTOR-LEVEL explanation
+        tutor_explanation = generate_tutor_explanation(fid, target, v, v_display, units, res, final_res)
 
         return jsonify({
-            'res_formatted': None,  # Frontend handles formatting
             'res': final_res,
             'unit': units[target],
-            'steps': steps
+            'steps': steps,
+            'tutor_explanation': tutor_explanation  # NEW: Rich explanation
         })
 
     except ZeroDivisionError:
