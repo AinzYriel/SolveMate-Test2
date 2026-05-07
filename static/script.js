@@ -122,6 +122,7 @@ function performCalculation() {
 }
 
 // NEW: Explain button handler
+// FIXED: Explain button handler
 function showExplanation() {
     if (!lastCalculationData) return;
 
@@ -135,11 +136,34 @@ function showExplanation() {
     })
     .then(r => r.json())
     .then(data => {
-        document.getElementById('explanation-content').innerHTML = data.explanation.map(e => `<div>${e}</div>`).join('');
+        // FIXED: Use data.steps (not data.explanation) + add tutor explanation
+        const explanationContent = document.getElementById('explanation-content');
+        
+        // Show detailed steps first
+        explanationContent.innerHTML = `
+            <div style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
+                <h5 style="margin: 0 0 10px 0; color: var(--primary);">📋 Detailed Steps:</h5>
+                ${data.steps.map(s => `<div style="margin-bottom: 8px;">${s}</div>`).join('')}
+            </div>
+        `;
+        
+        // Add tutor explanation using utils function (via backend)
+        if (data.tutor_explanation) {
+            explanationContent.innerHTML += `
+                <div style="background: rgba(16,185,129,0.1); padding: 1rem; border-radius: 8px;">
+                    <h5 style="margin: 0 0 10px 0; color: var(--secondary);">🎓 Physics Insight:</h5>
+                    ${data.tutor_explanation.map(e => `<div style="margin-bottom: 6px;">${e}</div>`).join('')}
+                </div>
+            `;
+        }
+        
         document.getElementById('explanation-panel').style.display = 'block';
         document.getElementById('explanation-content').scrollIntoView({ behavior: 'smooth' });
     })
-    .catch(err => console.error('Explain error:', err))
+    .catch(err => {
+        console.error('Explain error:', err);
+        document.getElementById('explanation-content').innerHTML = '<div style="color: #ef4444;">Error loading explanation</div>';
+    })
     .finally(() => {
         document.getElementById('explain-btn').innerText = '📚 Explain in Detail';
         document.getElementById('explain-btn').disabled = false;
