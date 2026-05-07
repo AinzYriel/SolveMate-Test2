@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 from calculator import calc_bp
 from formulas import physics_library
 
@@ -9,13 +9,8 @@ app.register_blueprint(calc_bp)
 def index():
     return render_template('index.html', library=physics_library)
 
-# NEW: Explain endpoint (proxies to calculator)
-@app.route('/api/explain', methods=['POST'])
-def explain_proxy():
-    """Proxy to calculator blueprint's explain endpoint."""
-    from flask import request
-    # Forward the request to blueprint
-    return calc_bp.make_response(calc_bp.view_functions['calculator.explain_calculation'](request))
+# FIXED: Remove the broken proxy - blueprint handles routing directly
+# The blueprint's /api/explain endpoint is already accessible at /api/explain
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
